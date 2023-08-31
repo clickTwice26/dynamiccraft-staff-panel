@@ -1,0 +1,14 @@
+#!/usr/bin/python3
+import cgi, cgitb
+import sys
+import os
+import func as f
+import frontend as fd
+if f.major() is False:
+    print("")
+    print("Some one bruteforced.Please wait 2 minutes server will be restart")
+    sys.exit()
+
+f.ddosSaver()
+
+fd.loading(3, "/cgi-bin/loginPage")
