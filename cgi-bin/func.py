@@ -1,3 +1,4 @@
+import time
 import sys
 from datetime import datetime
 import random 
@@ -81,17 +82,51 @@ def tokengen():
 	passivelogger(f"Token Generated at {currentTime()} | {new_token}")
 	return new_token
 def tokenset(token, timeframe):
-	token_db = constant.admin_dir+"tokens"
+	token_db = constant.admin_dir+"tokens/"
 	token,timeframe = str(token), str(timeframe)
+	timeframe = token+"_"+timeframe
 	# print(token)
 	
 	try:
-		with open(timeframe, "w") as tokenlogger:
+		with open(token_db+timeframe, "w") as tokenlogger:
 			tokenlogger.write(token)
 			tokenlogger.close()
 	except Exception as error:
 		errorlog("0004", error)
+def tokencheck(token, timeframe):
+	token_db = constant.admin_dir+"tokens/"
+	token, timeframe = str(token), str(timeframe)
+	#print(token)
+	timeframe = token+"_"+timeframe
+
+	try:
+		previous_token = open(token_db+timeframe,"r").read()
+		x = "pure"
+	except FileNotFoundError:
+		x = "nice"
+		return False
+	if x != "nice":
+		previous_token = open(token_db+timeframe,"r").read()
+		if token == previous_token:
+			return True
+		else:
+			# print("")
+			# print("Invaild Session")
+			return False
+
+		
 	
+	# previous_token = open(token_db+timeframe,"r").read()
+
+def tokendel(token, timeframe):
+	token_db = constant.admin_dir+"tokens/"
+	# token_db = constant.admin_dir+"tokens/"
+	token, timeframe = str(token), str(timeframe)
+	timeframe = token+"_"+timeframe
+	os.system(f"cd {token_db} && rm {timeframe}")
+
+
+
 def get_ip_address():
     url = 'https://api.ipify.org'
     response = requests.get(url)
@@ -104,14 +139,51 @@ def ip_log(comment="uncommented"):
 def security_check(ip, username="unknown"):
 	banned_ip=open(constant.admin_dir+"logs/bannedip.txt", "r").read().splitlines()
 	if ip in banned_ip:
-		print("This ip is banned")
+		print("")
+		print("You are ip banned from this panel")
 		passivelogger(f"{banned_ip} banned ip | username")
-		return False
+		sys.exit()
+		# return False
 	else:
-		banned_user = open(constant.admin_dir+"logis/banneduser.txt", "r").read().splitlines()
+		banned_user = open(constant.admin_dir+"logs/banneduser.txt", "r").read().splitlines()
 		if username in banned_user:
-			print("this user name is banned")
-			return False
+			print("")
+			print("You are banned from this panel")
+			# return False
+			sys.exit()
 		else:
-			return True
-	
+			timeout = open(constant.admin_dir+"logs/timeout.txt", "r").read().splitlines()
+			if username in timeout:
+				time.sleep(constant.timeout_time)
+				# return True
+def loginverification(username, password, token):
+	username_dir = constant.login+"usernames.txt"
+	password_dir = constant.login+"passwords.txt"
+	username_list = open(username_dir, "r").read().splitlines()
+	if username in username_list:
+		user_index = username_list.index(username)
+		print(user_index)
+		print("Username matched")
+
+		password_list = open(password_dir,"r").read().splitlines()
+		if password in password_list:
+			if password == password_list[user_index]:
+				print("")
+				# print("Password Matched")
+				print(token)
+				tokenset(token, "logged_in")
+				return "1"
+			else:
+				problem = "Wrong Password"
+				# print("Password didn't matched")
+				return "01"
+		else:
+			problem = "Password didn't found"
+			# print("Password didn't found")
+			return "02"
+	else:
+		
+		problem = "You are not registered"
+		# print("Username not found")
+		return "03"
+

@@ -1,2 +1,3 @@
 import func
-func.get_ip_address()
+func.loginverification("shagato", "adgmin", "asd")
+print(problem)
