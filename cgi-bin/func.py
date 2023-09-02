@@ -1,0 +1,117 @@
+import sys
+from datetime import datetime
+import random 
+import requests
+import constant
+import os
+import string
+
+
+ 
+# Call the function to get the IP address
+
+def currentTime(what="all"): #error = 0001
+
+	error = "0001"
+	# datetime object containing current date and time
+	try:
+		now = datetime.now()
+		# dd/mm/YY H:M:S
+		dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+	except Exception as error:
+		print(f"Error Faced: {error}")
+		sys.exit("ERROR-00001")		
+	if what in ["date", "time"]:
+		if what  == "date":
+			date = now.strftime("%d/%m/%Y")
+			date = str(date)
+			return date
+		elif what == "time":
+			time = str(now.strftime("%H:%M:%S"))
+			return time
+		elif what == "all":
+			dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+			date_time = str(dt_string)
+			return date_time
+	else:
+		# print("Invaild Argument")
+		# print("Returing)
+		dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+		date_time = str(dt_string)
+		return date_time
+def line_prepender(filename, string):
+    with open(filename, 'r+') as f:
+        content = f.read()
+        f.seek(0, 0)
+        f.write(string.rstrip('\r\n') + '\n' + content)
+def passivelogger(log,error="regular-log"):
+	logname = "passivelog.txt"
+	log_dir = constant.log_folder+f"/{logname}"
+	log = f"[PASSIVE-{error}]-[{currentTime()}]-[{log}]"
+	try:
+		line_prepender(log_dir, log)
+	except FileNotFoundError:
+		print("File Not Found-Error Code = 0002->0003")
+
+		#error-fix-0003
+		with open(log_dir,"w") as errorfix0003:
+			errorfix0003.write("")
+			errorfix0003.close()
+	finally:
+		line_prepender(log_dir,log)
+def errorlog(error, log):
+	logname = "errorlog.txt"
+	log_dir = constant.log_folder+f"/{logname}"
+	log = f"[PASSIVE-{error}]-[{currentTime()}]-[{log}]"
+	try:
+		line_prepender(log_dir, log)
+	except FileNotFoundError:
+		print("File Not Found-Error Code = 0002->0003")
+
+		#error-fix-0003
+		with open(log_dir,"w") as errorfix0003:
+			errorfix0003.write("")
+			errorfix0003.close()
+	finally:
+		line_prepender(log_dir,log)
+
+def tokengen():
+
+	new_token = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+	passivelogger(f"Token Generated at {currentTime()} | {new_token}")
+	return new_token
+def tokenset(token, timeframe):
+	token_db = constant.admin_dir+"tokens"
+	token,timeframe = str(token), str(timeframe)
+	# print(token)
+	
+	try:
+		with open(timeframe, "w") as tokenlogger:
+			tokenlogger.write(token)
+			tokenlogger.close()
+	except Exception as error:
+		errorlog("0004", error)
+	
+def get_ip_address():
+    url = 'https://api.ipify.org'
+    response = requests.get(url)
+    ip_address = response.text
+    return ip_address
+def ip_log(comment="uncommented"):
+	ip = get_ip_address()
+	passivelogger(f"{ip}-{comment}")
+
+def security_check(ip, username="unknown"):
+	banned_ip=open(constant.admin_dir+"logs/bannedip.txt", "r").read().splitlines()
+	if ip in banned_ip:
+		print("This ip is banned")
+		passivelogger(f"{banned_ip} banned ip | username")
+		return False
+	else:
+		banned_user = open(constant.admin_dir+"logis/banneduser.txt", "r").read().splitlines()
+		if username in banned_user:
+			print("this user name is banned")
+			return False
+		else:
+			return True
+	

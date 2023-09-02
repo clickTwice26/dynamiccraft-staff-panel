@@ -1,0 +1,5 @@
+[PASSIVE-0004]-[01/09/2023 23:00:49]-[write() argument must be str, not tuple]
+[PASSIVE-0004]-[01/09/2023 23:00:49]-[write() argument must be str, not tuple]
+[PASSIVE-0004]-[01/09/2023 22:27:11]-[write() argument must be str, not tuple]
+[PASSIVE-0004]-[01/09/2023 22:27:11]-[write() argument must be str, not tuple]
+[PASSIVE-0004]-[01/09/2023 22:27:04]-[write() argument must be str, not tuple]
