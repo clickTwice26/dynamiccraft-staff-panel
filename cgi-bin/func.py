@@ -134,6 +134,7 @@ def get_ip_address():
     return ip_address
 def ip_log(comment="uncommented"):
 	ip = get_ip_address()
+	ip = "0.0.0.0"
 	passivelogger(f"{ip}-{comment}")
 
 def security_check(ip, username="unknown"):
@@ -178,7 +179,7 @@ def loginverification(username, password, token):
 				# print("Password didn't matched")
 				return "01"
 		else:
-			problem = "Password didn't found"
+			problem = "Wrong Password"
 			# print("Password didn't found")
 			return "02"
 	else:
