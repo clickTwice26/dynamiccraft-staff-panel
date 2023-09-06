@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!-- Created By CodingLab - www.codinglabweb.com -->
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8">
+    <title> Create an Acount </title>
+    <link rel="stylesheet" href="/css/createaccount.css">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   </head>
+<body>
+  <div class="container">
+    <div class="title">Create an account</div>
+    <div class="content">
+      <form action="/cgi-bin/registration.py" method="post">
+        <div class="user-details">
+          <!-- <div class="input-box">
+            <span class="details">Full Name</span>
+            <input type="text" placeholder="Enter your name" required>
+          </div> -->
+          <div class="input-box">
+            <span class="details">Username</span>
+            <input type="text" name="uname" placeholder="Enter your username" required>
+          </div>
+          <div class="input-box">
+            <span class="details">Email</span>
+            <input type="text" name="email" placeholder="Enter your email" required>
+          </div>
+          <div class="input-box">
+            <span class="details">Admin Token</span>
+            <input type="text" placeholder="Enter your token" name="admin_token" required>
+          </div>
+          <div class="input-box">
+            <span class="details">Password</span>
+            <input type="text" placeholder="Enter your password" name="newpassw" required>
+          </div>
+          <div class="input-box">
+            <span class="details">Confirm Password</span>
+            <input type="text" name="confirmpassw" placeholder="Confirm your password" required>
+          </div>
+        </div>
+        <div class="gender-details">
+          <input type="radio" name="role" id="dot-1" value="scout">
+          <input type="radio" name="role" id="dot-2" value="builder">
+          <input type="radio" name="role" id="dot-3" value="admin">
+          <span class="gender-title">Role</span>
+          <div class="category">
+            <label for="dot-1">
+            <span class="dot one"></span>
+            <span class="gender">Scout</span>
+          </label>
+          <label for="dot-2">
+            <span class="dot two"></span>
+            <span class="gender">Builder</span>
+          </label>
+          <label for="dot-3">
+            <span class="dot three"></span>
+            <span class="gender">Admin</span>
+            </label>
+          </div>
+        </div>
+        <input type="text" name="token" id="" value="token" hidden>
+
+        <div class="button">
+          <input type="submit" value="Register">
+        </div>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>

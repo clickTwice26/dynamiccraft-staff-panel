@@ -148,16 +148,17 @@ def security_check(ip, username="unknown"):
 		# return False
 	else:
 		banned_user = open(constant.admin_dir+"logs/banneduser.txt", "r").read().splitlines()
-		if username in banned_user:
-			print("")
-			print("You are banned from this panel")
-			# return False
-			sys.exit()
-		else:
-			timeout = open(constant.admin_dir+"logs/timeout.txt", "r").read().splitlines()
-			if username in timeout:
-				time.sleep(constant.timeout_time)
-				# return True
+		if username != "unknown":
+			if username in banned_user:
+				print("")
+				print("You are banned from this panel")
+				# return False
+				sys.exit()
+			else:
+				timeout = open(constant.admin_dir+"logs/timeout.txt", "r").read().splitlines()
+				if username in timeout:
+					time.sleep(constant.timeout_time)
+					# return True
 def loginverification(username, password, token):
 	username_dir = constant.login+"usernames.txt"
 	password_dir = constant.login+"passwords.txt"
@@ -188,6 +189,48 @@ def loginverification(username, password, token):
 		problem = "You are not registered"
 		# print("Username not found")
 		return "03"
+def emailverification(suspectemail):
+	temp_mail = str(suspectemail)
+	if temp_mail.endswith("@gmail.com") or temp_mail.endswith("@yahoo.com") or temp_mail.endswith("@proton.me"):
+		return True
+	else:
+		return False
+def passwordverify(password1, password2):
+	if password1 == password2:
+		return True
+	else:
+		return False
+def roleverify(role):
+	if role in ["scout", "moderator", "builder"]:
+		return True
+	else:
+		return False
+	
+def database_init(username):
+	init_date = currentTime("date")
+	init_year = int(init_date.split("/")[2])
+	init_month = int(init_date.split("/")[1])
+	month_array = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"]
+	final_month = month_array[init_month-1]
+	left_month = month_array[init_month-1:]
+	# final_date = init_date.replace("/","_")
+	databasedir = constant.admin_dir+f"userdata/{username}/"
+	try:
+		os.mkdir(databasedir+str(init_year))
+	except FileNotFoundError:
+		print("User not found")
+		sys.exit()
+	except FileExistsError:
+		pass
+	for i in left_month:
+		try:
+			os.mkdir(databasedir+str(init_year)+"/"+i)
+		except FileExistsError:
+			pass
+	
+
+	# print(init_year, init_month, final_month)
+
 
 class User:
 	"""Base class for all the users"""
@@ -197,16 +240,34 @@ class User:
 		self.token = token
 		self.role = role
 		self.ip = ip
-		
-	def create(self, currentstatus):
+	def createdetailsverify(self,username, newpassword, confirmpassword, email, role):
+		if username not in open(constant.admin_dir+"login/usernames.txt").read().splitlines() or username != "unknown":
+			if emailverification(email):
+				print("")
+				if passwordverify(newpassword, confirmpassword):
+					if roleverify(role):
+						return "1"
+					else:
+						return "2"
+				else:
+					return "3"
+			else:
+				return "4"
+		else:
+			return "5"			
+
+	def create(self,newpassword, confirmpassword, email, role):
 		userdir = constant.userdir+f"{self.username}/{self.username}.json"
 		print(userdir)
+		currentstatus = "offline"
+		
 		usertemplate = {
 			"username": self.username,
 			"ip": self.ip,
 			"role": self.role,
-			"token": self.token,
-			"currentstatus": currentstatus
+			"currentstatus": currentstatus,
+			"creation_date:": currentTime("all"),
+			"last_login": currentTime(all)
 			}
 		try:
 			os.mkdir(constant.userdir+f"{self.username}")
@@ -217,14 +278,14 @@ class User:
 		with open(userdir, "w") as jsoncreater:
 			jsoncreater.write(userdata_json)
 			jsoncreater.close()
-		
+		database_init(self.username)
 		# with open(userdir, 'r+') as f:
 		# 	data = json.load(f)
 		# 	data['id'] = 134 # <--- add `id` value.
 		# 	f.seek(0)        # <--- should reset file position to the beginning.
 		# 	json.dump(data, f, indent=4)
 		# 	f.truncate()     # remove remaining par
-	def changestatus(self, status):
+	def changestatus(self, status):	
 		userdir = constant.userdir+f"{self.username}/{self.username}.json"
 		userJSON = open(userdir,"r")
 		userJSONdata = json.load(userJSON)
@@ -243,7 +304,7 @@ class User:
 				print("current status same")
 		else:
 			print(f"Invalid-status: {status}")
-				
+	
 
 
 	
