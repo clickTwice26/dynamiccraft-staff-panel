@@ -7,8 +7,9 @@ import constant
 import os
 import string
 
+import json
 
- 
+
 # Call the function to get the IP address
 
 def currentTime(what="all"): #error = 0001
@@ -58,8 +59,8 @@ def passivelogger(log,error="regular-log"):
 		with open(log_dir,"w") as errorfix0003:
 			errorfix0003.write("")
 			errorfix0003.close()
-	finally:
-		line_prepender(log_dir,log)
+	# finally:
+	# 	line_prepender(log_dir,log)
 def errorlog(error, log):
 	logname = "errorlog.txt"
 	log_dir = constant.log_folder+f"/{logname}"
@@ -188,3 +189,61 @@ def loginverification(username, password, token):
 		# print("Username not found")
 		return "03"
 
+class User:
+	"""Base class for all the users"""
+	def __init__(self, username, password, token, role, ip) -> None:
+		self.username = username
+		self.password = password
+		self.token = token
+		self.role = role
+		self.ip = ip
+		
+	def create(self, currentstatus):
+		userdir = constant.userdir+f"{self.username}/{self.username}.json"
+		print(userdir)
+		usertemplate = {
+			"username": self.username,
+			"ip": self.ip,
+			"role": self.role,
+			"token": self.token,
+			"currentstatus": currentstatus
+			}
+		try:
+			os.mkdir(constant.userdir+f"{self.username}")
+		except Exception as e:
+			print(e)
+			print("Creating a new username directory was no successful")
+		userdata_json = json.dumps(usertemplate, indent=4)
+		with open(userdir, "w") as jsoncreater:
+			jsoncreater.write(userdata_json)
+			jsoncreater.close()
+		
+		# with open(userdir, 'r+') as f:
+		# 	data = json.load(f)
+		# 	data['id'] = 134 # <--- add `id` value.
+		# 	f.seek(0)        # <--- should reset file position to the beginning.
+		# 	json.dump(data, f, indent=4)
+		# 	f.truncate()     # remove remaining par
+	def changestatus(self, status):
+		userdir = constant.userdir+f"{self.username}/{self.username}.json"
+		userJSON = open(userdir,"r")
+		userJSONdata = json.load(userJSON)
+		userJSON.close()
+		#checking valid data of status variable
+		if status in ["online", "offline"]:
+			if not userJSONdata["currentstatus"] == status:
+				passivelogger(f"{self.username} changed status {userJSONdata['currentstatus']} to {status}")
+				userJSONdata["currentstatus"] = status
+				userdata_json = json.dumps(userJSONdata, indent=4)
+				with open(userdir, "w") as jsoncreater:
+					jsoncreater.write(userdata_json)
+					jsoncreater.close()
+								
+			else:
+				print("current status same")
+		else:
+			print(f"Invalid-status: {status}")
+				
+
+
+	
