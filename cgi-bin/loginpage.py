@@ -4,7 +4,7 @@ import func
 import frontend
 import cgi
 import sys
-func.security_check(func.get_ip_address(), "login")
+func.security_check(func.get_ip_address(), "unknown")
 
 print("")
 token_init = func.tokengen()

@@ -17,6 +17,14 @@ token = formdata.getvalue("token")
 role = formdata.getvalue("role")
 newuser = f.User(uname,newpassw, token, role, ip)
 # f.security_check(ip, "unknown")
+if f.tokencheck(token, "reg_page"):
+    pass
+else:
+    print("")
+    print("Invaild Session")
+    sys.exit()
+f.tokendel(token,"reg_page")
+
 if admin_token in os.listdir(constant.admin_dir+"login/registration_token/"):
     # os.rmdir(constant.admin_dir+f"login/registration_token/{admin_token}")
     pass

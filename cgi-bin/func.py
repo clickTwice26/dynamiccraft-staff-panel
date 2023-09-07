@@ -11,6 +11,11 @@ import json
 
 
 # Call the function to get the IP address
+def value_checker(x):
+	if "None" in x:
+		return False
+	else:
+		return True
 
 def currentTime(what="all"): #error = 0001
 
@@ -124,8 +129,10 @@ def tokendel(token, timeframe):
 	# token_db = constant.admin_dir+"tokens/"
 	token, timeframe = str(token), str(timeframe)
 	timeframe = token+"_"+timeframe
-	os.system(f"cd {token_db} && rm {timeframe}")
-
+	try:
+		os.remove(constant.admin_dir+f"tokens/{timeframe}")
+	except FileNotFoundError:
+		pass
 
 
 def get_ip_address():
@@ -154,26 +161,33 @@ def security_check(ip, username="unknown"):
 				print("You are banned from this panel")
 				# return False
 				sys.exit()
+				
 			else:
-				timeout = open(constant.admin_dir+"logs/timeout.txt", "r").read().splitlines()
-				if username in timeout:
-					time.sleep(constant.timeout_time)
+				if username in open(constant.admin_dir+f"login/usernames.txt","r").read().splitlines() or username =="unknown":
+					timeout = open(constant.admin_dir+"logs/timeout.txt", "r").read().splitlines()
+					if username in timeout:
+						time.sleep(constant.timeout_time)
+					
 					# return True
+				else:
+					print("")
+					print("Invalid Username")
+					sys.exit()
 def loginverification(username, password, token):
 	username_dir = constant.login+"usernames.txt"
 	password_dir = constant.login+"passwords.txt"
 	username_list = open(username_dir, "r").read().splitlines()
 	if username in username_list:
 		user_index = username_list.index(username)
-		print(user_index)
-		print("Username matched")
+		# print(user_index)
+		# print("Username matched")
 
 		password_list = open(password_dir,"r").read().splitlines()
 		if password in password_list:
 			if password == password_list[user_index]:
 				print("")
 				# print("Password Matched")
-				print(token)
+				# print(token)
 				tokenset(token, "logged_in")
 				return "1"
 			else:
@@ -215,6 +229,10 @@ def database_init(username):
 	left_month = month_array[init_month-1:]
 	# final_date = init_date.replace("/","_")
 	databasedir = constant.admin_dir+f"userdata/{username}/"
+	if str(init_year) not in os.listdir(databasedir):
+		os.mkdir(databasedir+str(init_year))
+	else:
+		pass
 	try:
 		os.mkdir(databasedir+str(init_year))
 	except FileNotFoundError:
@@ -279,12 +297,20 @@ class User:
 			jsoncreater.write(userdata_json)
 			jsoncreater.close()
 		database_init(self.username)
+
 		# with open(userdir, 'r+') as f:
 		# 	data = json.load(f)
 		# 	data['id'] = 134 # <--- add `id` value.
 		# 	f.seek(0)        # <--- should reset file position to the beginning.
 		# 	json.dump(data, f, indent=4)
 		# 	f.truncate()     # remove remaining par
+		#adding to the local_db
+		with open(constant.admin_dir+"login/usernames.txt", "a") as username_adder:
+			username_adder.write(self.username+"\n")
+			username_adder.close()
+		with open(constant.admin_dir+"login/passwords.txt", "a") as username_adder:
+			username_adder.write(newpassword+"\n")
+			username_adder.close()		
 	def changestatus(self, status):	
 		userdir = constant.userdir+f"{self.username}/{self.username}.json"
 		userJSON = open(userdir,"r")

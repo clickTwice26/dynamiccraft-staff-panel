@@ -3,6 +3,9 @@ import cgi
 import os
 import func
 import sys
+import frontend as fd
+import constant
+import func
 #form-value
 formdata = cgi.FieldStorage()
 username=formdata.getvalue("uname")
@@ -19,8 +22,11 @@ if func.tokencheck(token, "loginpage"):
     new_token = func.tokengen()
     verif = func.loginverification(username, password, new_token)
     if verif == "1":
-        print("")
-        print("Login Successful")
+        # print("")
+        # print("Login Successful")
+        staff_token = func.tokengen()
+        func.tokenset(staff_token, "logged_in")
+        fd.staff_panel(username, "online", staff_token)
     elif verif == "01":
         print("Password didn't match")
     elif verif == "02":
