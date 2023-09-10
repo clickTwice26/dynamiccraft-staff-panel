@@ -248,6 +248,19 @@ def database_init(username):
 	
 
 	# print(init_year, init_month, final_month)
+def statusid(username, id):	
+	userdir = constant.userdir+f"{username}/{username}.json"
+	userJSON = open(userdir,"r")
+	userJSONdata = json.load(userJSON)
+	userJSON.close()
+	#checking valid data of status variable
+
+	userJSONdata["status_id"] = id 
+	userdata_json = json.dumps(userJSONdata, indent=4)
+	with open(userdir, "w") as jsoncreater:
+		jsoncreater.write(userdata_json)
+		jsoncreater.close()
+							
 
 
 class User:
@@ -285,7 +298,8 @@ class User:
 			"role": self.role,
 			"currentstatus": currentstatus,
 			"creation_date:": currentTime("all"),
-			"last_login": currentTime(all)
+			"last_login": currentTime("all"),
+			"status_id": "None",
 			}
 		try:
 			os.mkdir(constant.userdir+f"{self.username}")
@@ -325,12 +339,69 @@ class User:
 				with open(userdir, "w") as jsoncreater:
 					jsoncreater.write(userdata_json)
 					jsoncreater.close()
+				
+				return True
+
 								
 			else:
-				print("current status same")
+				return False
+				pass
+				# print("current status same")
 		else:
-			print(f"Invalid-status: {status}")
+			return False
+			pass
+			# print(f"Invalid-status: {status}")
 	
+
+	def activityupdate(self, status, id=""):
+		# if status =="offline" or status == "None":
+
+		date = currentTime("date").split("/")
+		year = date[2]
+		month = date[1]
+		month_array = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"]
+		final_month = month_array[int(month)-1]
+		dir = constant.userdir+self.username+f"/{year}/{final_month}/{'_'.join(date)}/"
+
+		if status == "online":
+			id_rd = str(random.randint(1000, 9999))
+			id_rd = str(id_rd)
+			statusid(self.username, id_rd)
+			id = id_rd
+			if os.path.exists(dir):
+				with open(dir+id, "w") as statusupdater:
+					statusupdater.write(currentTime("time"))
+					statusupdater.close()
+
+			else:
+				os.mkdir(dir)
+				with open(dir+id, "w") as statusupdater:
+					statusupdater.write(currentTime("time"))
+					statusupdater.close()
+		if status == "offline":
+			userdir = constant.userdir+f"{self.username}/{self.username}.json"
+			userJSON = open(userdir,"r")
+			userJSONdata = json.load(userJSON)
+			userJSON.close()
+			id = userJSONdata["status_id"]
+			if os.path.exists(dir):
+				with open(dir+id, "a") as statusupdater:
+					statusupdater.write('\n'+currentTime("time"))
+					statusupdater.close()
+
+			else:
+				os.mkdir(dir)
+				with open(dir+id, "a") as statusupdater:
+					statusupdater.write('\n'+currentTime("time"))
+					statusupdater.close()
+			statusid(self.username, f"{id}_ended")
+
+
+	def durationcounter(self,time):
+		if time == "month":
+			pass
+		if time == "day":
+			pass
 
 
 	

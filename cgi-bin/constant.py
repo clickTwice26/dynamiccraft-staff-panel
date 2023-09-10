@@ -4,7 +4,7 @@ admin_dir = "/home/dark/Desktop/dynamiccraft-staff-panel/admin/"
 log_folder = admin_dir+"logs"
 
 #security:
-timeout_time = 10
+timeout_time = 1
 login = admin_dir+"login/"
 #userdata
 

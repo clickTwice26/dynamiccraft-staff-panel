@@ -26,7 +26,7 @@ if func.tokencheck(token, "loginpage"):
         # print("Login Successful")
         staff_token = func.tokengen()
         func.tokenset(staff_token, "logged_in")
-        fd.staff_panel(username, "online", staff_token)
+        fd.staff_panel(username, staff_token)
     elif verif == "01":
         print("Password didn't match")
     elif verif == "02":
